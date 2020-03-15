@@ -1,0 +1,63 @@
+#
+# Preference
+#
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: preference
+  namespace: tutorial
+spec:
+  hosts:
+  - preference
+  http:
+  - fault:
+      delay:
+        fixedDelay: 20ms
+        percent: 50
+    route:
+    - destination:
+        host: preference
+        subset: app-preference
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: preference
+spec:
+  host: preference
+  subsets:
+  - name: app-preference
+    labels:
+      app: preference
+#
+# Recommendation
+#
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: recommendation
+spec:
+  hosts:
+  - recommendation
+  http:
+  - fault:
+      delay:
+        fixedDelay: 50ms
+        percent: 50
+    route:
+    - destination:
+        host: recommendation
+        subset: app-recommendation
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: recommendation
+spec:
+  host: recommendation
+  subsets:
+  - labels:
+      app: recommendation
+    name: app-recommendation
+---
